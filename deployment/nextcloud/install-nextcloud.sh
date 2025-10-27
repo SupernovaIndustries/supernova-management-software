@@ -70,6 +70,7 @@ echo
 
 log_warning "⚠️  IMPORTANTE: Il disco NON verrà formattato!"
 log_info "Verrà creata solo una cartella 'nextcloud/' sui tuoi dati esistenti"
+log_info "Default: /dev/sda1 (HDD 4TB principale)"
 echo
 
 read -p "$(echo -e ${YELLOW}Path dove montare lo storage [/mnt/shared-storage]:${NC} )" storage_input
@@ -83,8 +84,9 @@ if [ ! -d "$STORAGE_MOUNT" ]; then
 
     if [[ "$mount_disk" =~ ^[Yy]$ ]]; then
         echo
-        log_info "Esempio: /dev/sdb1, /dev/nvme0n1p1, /dev/sda2"
-        read -p "$(echo -e ${YELLOW}Device del disco (es. /dev/sdb1):${NC} )" disk_device
+        log_info "Default: /dev/sda1 (HDD 4TB principale)"
+        read -p "$(echo -e ${YELLOW}Device del disco [/dev/sda1]:${NC} )" disk_device
+        disk_device=${disk_device:-"/dev/sda1"}
 
         if [ ! -b "$disk_device" ]; then
             log_error "Device $disk_device non trovato!"

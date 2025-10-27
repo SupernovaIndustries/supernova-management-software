@@ -103,13 +103,13 @@ chmod +x proxmox/*.sh
 | RAM | 12GB (12288 MB) | |
 | Disk sistema | 40GB | Solo OS, non dati |
 | Network | DHCP o statico | |
-| **Disco dati** | `/dev/sdb` | **Disco condiviso!** |
+| **Disco dati** | `/dev/sda1` | **HDD 4TB - NON formattato!** |
 
 **⚠️ IMPORTANTE:** Quando chiede "Vuoi aggiungere un disco per i dati?":
-- Rispondi **Sì**
-- Specifica il device del tuo disco (es. `/dev/sdb`)
+- Premi **INVIO** (default è Sì)
+- Device disco: premi **INVIO** (default `/dev/sda1` - HDD 4TB)
 - Il disco verrà montato come `/mnt/shared-storage` NEL container
-- **NON verrà formattato**, solo montato!
+- **NON verrà formattato**, solo montato! I tuoi dati restano intatti.
 
 ### Passo 2: Installa Nextcloud
 
@@ -124,11 +124,12 @@ pct exec 201 -- /root/install-nextcloud.sh
 
 **Durante installazione ti chiederà:**
 
-1. **Path storage** → Conferma `/mnt/shared-storage`
-2. **Mount disco** → Se già montato da Proxmox, skip
-3. **Dominio** → `nextcloud.local` (o custom)
-4. **SSL** → No per ora (lo aggiungiamo dopo)
-5. **Tailscale** → Sì (consigliato)
+1. **Path storage** → `/mnt/shared-storage` (premi INVIO)
+2. **Mount disco** → y (premi INVIO)
+3. **Device disco** → `/dev/sda1` (premi INVIO - default HDD 4TB)
+4. **Dominio** → `nextcloud.local` (premi INVIO)
+5. **SSL** → No per ora
+6. **Tailscale** → Sì (consigliato)
 
 Lo script fa automaticamente:
 - ✅ Installa Docker + Docker Compose
@@ -184,7 +185,8 @@ pct exec 201 -- hostname -I
 ```bash
 # Su Proxmox host
 # Aggiungi bind mount del disco al container Supernova
-pct set 200 -mp0 /dev/sdb,mp=/mnt/shared-storage
+# Usa /dev/sda1 (HDD 4TB - NON verrà formattato)
+pct set 200 -mp0 /dev/sda1,mp=/mnt/shared-storage
 
 # Restart container
 pct restart 200

@@ -82,13 +82,15 @@ echo
 
 log_info "=== STORAGE AGGIUNTIVO (OPZIONALE) ==="
 log_info "Per i dati Nextcloud puoi usare un disco dedicato"
-read -p "$(echo -e ${YELLOW}Vuoi aggiungere un disco per i dati? [y/N]:${NC} )" add_disk
+log_info "Default: /dev/sda1 (HDD 4TB principale - NON verrà formattato)"
+read -p "$(echo -e ${YELLOW}Vuoi aggiungere un disco per i dati? [Y/n]:${NC} )" add_disk
+add_disk=${add_disk:-y}
 
 if [[ "$add_disk" =~ ^[Yy]$ ]]; then
     log_info "Dischi disponibili:"
-    lsblk -d -o NAME,SIZE,TYPE | grep disk
+    lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,FSTYPE | grep -v "loop"
 
-    STORAGE_DISK=$(prompt_input "Device disco (es. /dev/sdb)" "")
+    STORAGE_DISK=$(prompt_input "Device disco" "/dev/sda1")
 
     if [ -n "$STORAGE_DISK" ] && [ -b "$STORAGE_DISK" ]; then
         log_success "Disco $STORAGE_DISK verrà passato al container"
