@@ -1,0 +1,437 @@
+/* Supernova Management Theme */
+
+:root {
+    /* Supernova Color Palette */
+    --supernova-primary-dark: #0A1A1A;
+    --supernova-primary-mid1: #1A4A4A;
+    --supernova-primary-mid2: #2A6A6A;
+    --supernova-primary-bright: #00BFBF;
+    --supernova-secondary-aqua: #00FFFF;
+    --supernova-secondary-turquoise: #40E0D0;
+    --supernova-accent-teal: #20B2AA;
+    --supernova-accent-medium: #48D1CC;
+    --supernova-text-white: #FFFFFF;
+    --supernova-text-light-cyan: #E0FFFF;
+    --supernova-background-dark: #0A1A1A;
+}
+
+/* Sfondo default Filament - pulito e professionale */
+.fi-body {
+    /* Mantieni il background di default */
+}
+
+/* Panel styling - più pulito */
+.fi-main {
+    /* Mantieni il background di default */
+}
+
+/* Sidebar styling - solo accenti */
+.fi-sidebar {
+    /* Background di default */
+}
+
+.fi-sidebar-nav-item.fi-active {
+    background: linear-gradient(90deg, 
+        var(--supernova-primary-bright) 0%, 
+        var(--supernova-accent-medium) 100%);
+    color: var(--supernova-text-white) !important;
+    box-shadow: 0 0 15px rgba(0, 191, 191, 0.5);
+}
+
+/* Header styling - solo accenti */
+.fi-header {
+    /* Background di default */
+    border-bottom: 2px solid var(--supernova-primary-bright);
+    /* Aumenta padding e spacing */
+    padding: 1.5rem 2rem !important;
+    gap: 2rem !important;
+}
+
+/* Aumenta spazio tra breadcrumb e titolo */
+.fi-breadcrumbs {
+    margin-bottom: 1rem !important;
+}
+
+/* Aumenta spazio nel titolo */
+.fi-header-heading {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Aumenta spazio tra elementi nell'header */
+.fi-header > div {
+    gap: 1.5rem !important;
+}
+
+/* Spazio extra per i bottoni nell'header */
+.fi-header .fi-ac {
+    gap: 1rem !important;
+    margin-top: 0.5rem !important;
+}
+
+/* Card styling - più pulito */
+.fi-section {
+    /* Mantieni lo stile di default per le sezioni */
+}
+
+/* Button primary styling */
+.fi-btn-primary {
+    background: linear-gradient(90deg, 
+        var(--supernova-primary-bright) 0%, 
+        var(--supernova-accent-medium) 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 191, 191, 0.3);
+    transition: all 0.3s ease;
+}
+
+.fi-btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(0, 191, 191, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Logo enhancement */
+.fi-logo img {
+    filter: drop-shadow(0 0 10px rgba(0, 191, 191, 0.6));
+    transition: all 0.3s ease;
+}
+
+.fi-logo img:hover {
+    filter: drop-shadow(0 0 15px rgba(0, 191, 191, 0.8));
+    transform: scale(1.05);
+}
+
+/* Table styling - più pulito */
+.fi-table {
+    /* Mantieni stile default delle tabelle */
+}
+
+.fi-table thead th {
+    /* Header tabelle con background di default */
+    border-bottom: 2px solid var(--supernova-primary-bright);
+}
+
+.fi-table tbody tr:hover {
+    background: rgba(0, 191, 191, 0.1);
+}
+
+/* Form styling - solo accenti */
+.fi-input {
+    /* Background di default */
+}
+
+.fi-input:focus {
+    border-color: var(--supernova-primary-bright);
+    box-shadow: 0 0 0 3px rgba(0, 191, 191, 0.2);
+}
+
+/* Stats cards - solo accenti */
+.fi-stats-card {
+    /* Background di default */
+    border: 1px solid rgba(0, 191, 191, 0.3);
+}
+
+/* Notification styling - solo accenti */
+.fi-notification {
+    /* Background di default */
+    border: 1px solid var(--supernova-primary-bright);
+}
+
+/* Scrollbar styling - solo accenti */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    /* Background di default */
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, 
+        var(--supernova-primary-bright) 0%, 
+        var(--supernova-accent-medium) 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg,
+        var(--supernova-accent-medium) 0%,
+        var(--supernova-primary-bright) 100%);
+}
+
+/* ================================================
+   MOBILE OPTIMIZATION - RESPONSIVE DESIGN
+   ================================================ */
+
+/* Mobile-first responsive adjustments */
+@media (max-width: 640px) {
+    /* Smaller padding on mobile */
+    .fi-section-content {
+        padding: 0.75rem !important;
+    }
+
+    .fi-section-header {
+        padding: 0.75rem !important;
+    }
+
+    /* Stack form fields */
+    .fi-fo-field-wrp {
+        margin-bottom: 0.75rem;
+    }
+
+    /* Smaller stat cards */
+    .fi-stats-card {
+        padding: 0.75rem !important;
+    }
+
+    .fi-stats-card-value {
+        font-size: 1.25rem !important;
+    }
+
+    .fi-stats-card-description {
+        font-size: 0.75rem !important;
+    }
+
+    /* Compact table cells */
+    .fi-ta-cell {
+        padding: 0.5rem !important;
+        font-size: 0.875rem !important;
+    }
+
+    .fi-ta-header-cell {
+        padding: 0.5rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Better action buttons */
+    .fi-ta-actions {
+        gap: 0.25rem !important;
+    }
+
+    /* Compact header on mobile */
+    .fi-header {
+        padding: 1rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .fi-header-heading {
+        font-size: 1.25rem !important;
+    }
+
+    /* Smaller breadcrumbs */
+    .fi-breadcrumbs {
+        font-size: 0.75rem !important;
+    }
+
+    /* Widget spacing */
+    .fi-wi {
+        margin-bottom: 1rem !important;
+    }
+
+    /* Chart containers */
+    .fi-wi-chart {
+        height: 250px !important;
+    }
+}
+
+/* Touch-friendly buttons (Apple's recommended touch target: 44x44px) */
+.fi-btn {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.fi-ta-actions .fi-btn {
+    min-height: 40px;
+    min-width: 40px;
+}
+
+/* Readable text on mobile - prevent zoom on iOS */
+@media (max-width: 640px) {
+    body {
+        font-size: 16px !important;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .fi-section-content {
+        padding: 1rem !important;
+    }
+
+    .fi-ta-cell {
+        padding: 0.75rem !important;
+    }
+
+    .fi-stats-card {
+        padding: 1rem !important;
+    }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1025px) {
+    .fi-section-content {
+        padding: 1.5rem !important;
+    }
+}
+
+/* Widget responsive behavior - always 1 column (full width) */
+.fi-wi-stats-overview {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr !important;
+}
+
+/* Table scrolling on mobile */
+@media (max-width: 768px) {
+    .fi-ta-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .fi-ta-table thead,
+    .fi-ta-table tbody,
+    .fi-ta-table tr,
+    .fi-ta-table th,
+    .fi-ta-table td {
+        display: block;
+    }
+
+    .fi-ta-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .fi-ta-table tr {
+        border: 1px solid rgba(0, 191, 191, 0.2);
+        margin-bottom: 0.75rem;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .fi-ta-table td {
+        border: none;
+        position: relative;
+        padding-left: 45% !important;
+        text-align: right;
+    }
+
+    .fi-ta-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0.5rem;
+        width: 40%;
+        padding-right: 0.5rem;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: var(--supernova-primary-bright);
+    }
+
+    /* Hide empty cells on mobile */
+    .fi-ta-table td:empty {
+        display: none;
+    }
+}
+
+/* Modal responsive */
+@media (max-width: 640px) {
+    .fi-modal-window {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        margin: 1rem !important;
+    }
+
+    .fi-modal-content {
+        padding: 1rem !important;
+    }
+}
+
+/* Form field responsive columns */
+.fi-fo-component-ctn {
+    grid-column: span 1;
+}
+
+@media (min-width: 768px) {
+    .fi-fo-component-ctn[data-field-wrapper-grid-column="2"] {
+        grid-column: span 2;
+    }
+}
+
+/* Navigation responsive */
+@media (max-width: 1024px) {
+    .fi-sidebar {
+        position: fixed;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .fi-sidebar.open {
+        transform: translateX(0);
+    }
+}
+
+/* Charts responsive */
+.fi-wi-chart canvas {
+    max-height: 400px !important;
+}
+
+@media (max-width: 640px) {
+    .fi-wi-chart canvas {
+        max-height: 250px !important;
+    }
+}
+
+/* Widget table improvements for mobile */
+@media (max-width: 640px) {
+    .fi-wi-table .fi-ta {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .fi-wi-table .fi-ta-table {
+        min-width: 100%;
+    }
+}
+
+/* Improve action group dropdowns on mobile */
+@media (max-width: 640px) {
+    .fi-ac-group-actions-dropdown {
+        min-width: 200px !important;
+        max-width: calc(100vw - 2rem) !important;
+    }
+}
+
+/* Loading states on mobile */
+.fi-loading-indicator {
+    touch-action: none;
+}
+
+/* Improve pagination on mobile */
+@media (max-width: 640px) {
+    .fi-pagination {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .fi-pagination-btn {
+        min-width: 36px !important;
+        min-height: 36px !important;
+        padding: 0.25rem !important;
+    }
+}
+
+/* Notifications on mobile */
+@media (max-width: 640px) {
+    .fi-notifications {
+        width: calc(100vw - 2rem) !important;
+        left: 1rem !important;
+        right: 1rem !important;
+    }
+}

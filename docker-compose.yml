@@ -1,0 +1,92 @@
+
+services:
+  app:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: supernova_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - supernova
+    depends_on:
+      - postgres
+      - redis
+
+  nginx:
+    image: nginx:alpine
+    container_name: supernova_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - supernova
+    depends_on:
+      - app
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: supernova_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-supernova}
+      POSTGRES_USER: ${DB_USERNAME:-supernova}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_data:/data/postgres
+    ports:
+      - "5435:5432"
+    networks:
+      - supernova
+
+  redis:
+    image: redis:alpine
+    container_name: supernova_redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    networks:
+      - supernova
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: supernova_meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY:-masterKey}
+      MEILI_NO_ANALYTICS: true
+      MEILI_ENV: development
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilisearch_data:/data.ms
+    networks:
+      - supernova
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: supernova_mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - supernova
+
+networks:
+  supernova:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  meilisearch_data:
+    driver: local

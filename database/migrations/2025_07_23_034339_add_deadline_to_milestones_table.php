@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('milestones', function (Blueprint $table) {
+            $table->date('deadline')->nullable()->after('description');
+            $table->boolean('email_notifications')->default(true)->after('deadline');
+            $table->integer('notification_days_before')->default(3)->after('email_notifications');
+            $table->timestamp('last_notification_sent')->nullable()->after('notification_days_before');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('milestones', function (Blueprint $table) {
+            $table->dropColumn([
+                'deadline',
+                'email_notifications',
+                'notification_days_before', 
+                'last_notification_sent'
+            ]);
+        });
+    }
+};

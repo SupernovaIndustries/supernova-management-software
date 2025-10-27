@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    volumes:
+      # Use cached mode for better performance on Mac/Windows
+      - ./:/var/www:cached
+      # Exclude vendor and node_modules from volume mounting
+      - /var/www/vendor
+      - /var/www/node_modules
+      # Use tmpfs for cache directories
+      - type: tmpfs
+        target: /var/www/storage/framework/cache
+      - type: tmpfs
+        target: /var/www/storage/framework/sessions
+      - type: tmpfs
+        target: /var/www/storage/framework/views
+      - type: tmpfs
+        target: /var/www/bootstrap/cache
+    environment:
+      # Enable OPcache for better PHP performance
+      PHP_OPCACHE_ENABLE: 1
+      PHP_OPCACHE_MEMORY_CONSUMPTION: 256
+      PHP_OPCACHE_MAX_ACCELERATED_FILES: 20000
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: 0
+      PHP_OPCACHE_REVALIDATE_FREQ: 0
+
+  nginx:
+    volumes:
+      - ./:/var/www:ro,cached  # Read-only and cached

@@ -1,0 +1,39 @@
+# Dockerfile ottimizzato per Raspberry Pi
+FROM php:8.3-fpm-alpine
+
+# Install system dependencies per ARM
+RUN apk add --no-cache \
+    git \
+    curl \
+    libpng-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    postgresql-dev \
+    libzip-dev \
+    icu-dev \
+    zip \
+    unzip \
+    nodejs \
+    npm
+
+# Clear cache
+RUN rm -rf /var/cache/apk/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath zip intl
+
+# Install Redis extension
+RUN pecl install redis && docker-php-ext-enable redis
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Create user
+RUN addgroup -g 1000 -S supernova && \
+    adduser -u 1000 -S supernova -G supernova
+
+# Set working directory
+WORKDIR /var/www
+
+# Copy PHP configuration optimized for Pi
+COPY local.pi.ini /usr/local/etc/php/conf.d/local.ini

@@ -1,0 +1,278 @@
+version: '3.8'
+
+################################################################################
+# Supernova Management - Production Docker Compose
+################################################################################
+# Configurazione ottimizzata per produzione su Proxmox LXC
+# - Resource limits
+# - Health checks
+# - Restart policies
+# - Logging configuration
+################################################################################
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/php/Dockerfile
+      args:
+        - PHP_VERSION=8.3
+    container_name: supernova_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ../:/var/www
+      - ../docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ../storage/app:/var/www/storage/app
+      - ../storage/logs:/var/www/storage/logs
+    networks:
+      - supernova
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - CONTAINER_ROLE=app
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - MEILISEARCH_HOST=http://meilisearch:7700
+    healthcheck:
+      test: ["CMD", "php", "artisan", "health:check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  queue:
+    build:
+      context: ..
+      dockerfile: docker/php/Dockerfile
+    container_name: supernova_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ../:/var/www
+      - ../docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - supernova
+    depends_on:
+      - app
+      - redis
+    environment:
+      - CONTAINER_ROLE=queue
+    command: php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  scheduler:
+    build:
+      context: ..
+      dockerfile: docker/php/Dockerfile
+    container_name: supernova_scheduler
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ../:/var/www
+      - ../docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - supernova
+    depends_on:
+      - app
+    environment:
+      - CONTAINER_ROLE=scheduler
+    command: /bin/sh -c "while true; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  nginx:
+    image: nginx:alpine
+    container_name: supernova_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../:/var/www
+      - ../docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ../docker/nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - supernova
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: supernova_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-supernova}
+      POSTGRES_USER: ${DB_USERNAME:-supernova}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../deployment/backups/postgres:/backups
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - supernova
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-supernova} -d ${DB_DATABASE:-supernova}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:7-alpine
+    container_name: supernova_redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+      --appendfsync everysec
+    volumes:
+      - redis_data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    networks:
+      - supernova
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.10
+    container_name: supernova_meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY}
+      MEILI_NO_ANALYTICS: true
+      MEILI_ENV: production
+      MEILI_DB_PATH: /meili_data
+      MEILI_MAX_INDEXING_MEMORY: 512Mb
+    ports:
+      - "127.0.0.1:7700:7700"
+    volumes:
+      - meilisearch_data:/meili_data
+    networks:
+      - supernova
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:7700/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  supernova:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  meilisearch_data:
+    driver: local

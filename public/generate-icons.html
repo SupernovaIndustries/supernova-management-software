@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Supernova Icons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .icon-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .icon-box {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        canvas {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+        }
+        button {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #d97706;
+        }
+        .instructions {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Supernova Icons Generator</h1>
+    
+    <div class="instructions">
+        <h3>Istruzioni:</h3>
+        <ol>
+            <li>Il logo Supernova verrà generato in tutte le dimensioni necessarie per la PWA</li>
+            <li>Clicca su "Download" per scaricare ogni icona</li>
+            <li>Salva le icone nella cartella <code>/public/icons/</code></li>
+            <li>I nomi dei file devono corrispondere: icon-72x72.png, icon-96x96.png, etc.</li>
+        </ol>
+    </div>
+
+    <div class="icon-container" id="iconContainer"></div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        // Supernova logo as SVG string
+        const supernovaLogo = `
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="supernovaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#ef4444;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+                    </linearGradient>
+                    <radialGradient id="centerGlow">
+                        <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+                    </radialGradient>
+                </defs>
+                
+                <!-- Background circle for PWA -->
+                <circle cx="100" cy="100" r="95" fill="#ffffff"/>
+                
+                <!-- Star burst effect -->
+                <g transform="translate(100,100)">
+                    <!-- Outer rays -->
+                    ${Array.from({length: 8}, (_, i) => `
+                        <path d="M 0,0 L 0,-60 L -8,-68 L 0,-75 L 8,-68 L 0,-60 Z" 
+                              fill="url(#supernovaGradient)" 
+                              opacity="0.9"
+                              transform="rotate(${i * 45})"/>
+                    `).join('')}
+                    
+                    <!-- Secondary rays -->
+                    ${Array.from({length: 8}, (_, i) => `
+                        <path d="M 0,0 L 0,-40 L -5,-45 L 0,-50 L 5,-45 L 0,-40 Z" 
+                              fill="url(#supernovaGradient)" 
+                              opacity="0.6"
+                              transform="rotate(${i * 45 + 22.5})"/>
+                    `).join('')}
+                    
+                    <!-- Inner circle -->
+                    <circle cx="0" cy="0" r="25" fill="url(#supernovaGradient)"/>
+                    
+                    <!-- Center bright spot -->
+                    <circle cx="0" cy="0" r="12" fill="url(#centerGlow)"/>
+                </g>
+                
+                <!-- S letter in center -->
+                <text x="100" y="108" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#ffffff">S</text>
+            </svg>
+        `;
+
+        function generateIcon(size) {
+            const container = document.getElementById('iconContainer');
+            const iconBox = document.createElement('div');
+            iconBox.className = 'icon-box';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Create image from SVG
+            const img = new Image();
+            const blob = new Blob([supernovaLogo], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            
+            img.onload = function() {
+                // Draw white background
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, size, size);
+                
+                // Draw the logo
+                ctx.drawImage(img, 0, 0, size, size);
+                
+                URL.revokeObjectURL(url);
+            };
+            
+            img.src = url;
+            
+            const label = document.createElement('div');
+            label.textContent = `${size}x${size}`;
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Download';
+            downloadBtn.onclick = () => {
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.download = `icon-${size}x${size}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                });
+            };
+            
+            iconBox.appendChild(label);
+            iconBox.appendChild(canvas);
+            iconBox.appendChild(downloadBtn);
+            container.appendChild(iconBox);
+        }
+
+        // Generate all icons
+        sizes.forEach(size => generateIcon(size));
+
+        // Also generate a favicon
+        function generateFavicon() {
+            const iconBox = document.createElement('div');
+            iconBox.className = 'icon-box';
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            
+            const ctx = canvas.getContext('2d');
+            
+            const img = new Image();
+            const blob = new Blob([supernovaLogo], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            
+            img.onload = function() {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 32, 32);
+                ctx.drawImage(img, 0, 0, 32, 32);
+                URL.revokeObjectURL(url);
+            };
+            
+            img.src = url;
+            
+            const label = document.createElement('div');
+            label.textContent = 'Favicon (32x32)';
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Download';
+            downloadBtn.onclick = () => {
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.download = 'favicon.png';
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                });
+            };
+            
+            iconBox.appendChild(label);
+            iconBox.appendChild(canvas);
+            iconBox.appendChild(downloadBtn);
+            document.getElementById('iconContainer').appendChild(iconBox);
+        }
+        
+        generateFavicon();
+    </script>
+</body>
+</html>

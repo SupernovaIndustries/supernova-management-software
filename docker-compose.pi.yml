@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile.pi
+    container_name: supernova_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www:cached
+    networks:
+      - supernova
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      # Reduced memory usage
+      PHP_MEMORY_LIMIT: 128M
+      PHP_OPCACHE_MEMORY_CONSUMPTION: 64
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  nginx:
+    image: nginx:alpine
+    container_name: supernova_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www:ro,cached
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - supernova
+    depends_on:
+      - app
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: supernova_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-supernova}
+      POSTGRES_USER: ${DB_USERNAME:-supernova}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_SHARED_BUFFERS: 32MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 128MB
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - supernova
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  redis:
+    image: redis:alpine
+    container_name: supernova_redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
+    networks:
+      - supernova
+    deploy:
+      resources:
+        limits:
+          memory: 96M
+
+  # Rimuovi meilisearch per risparmiare memoria
+  # meilisearch: commentato
+
+networks:
+  supernova:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

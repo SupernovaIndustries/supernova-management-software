@@ -1,0 +1,173 @@
+/* Supernova Management Theme */
+
+:root {
+    /* Supernova Color Palette */
+    --supernova-primary-dark: #0A1A1A;
+    --supernova-primary-mid1: #1A4A4A;
+    --supernova-primary-mid2: #2A6A6A;
+    --supernova-primary-bright: #00BFBF;
+    --supernova-secondary-aqua: #00FFFF;
+    --supernova-secondary-turquoise: #40E0D0;
+    --supernova-accent-teal: #20B2AA;
+    --supernova-accent-medium: #48D1CC;
+    --supernova-text-white: #FFFFFF;
+    --supernova-text-light-cyan: #E0FFFF;
+    --supernova-background-dark: #0A1A1A;
+}
+
+/* Background gradient with orbs effect */
+.fi-body {
+    background: linear-gradient(135deg, 
+        var(--supernova-background-dark) 0%, 
+        var(--supernova-primary-mid1) 50%, 
+        var(--supernova-primary-mid2) 100%);
+    background-attachment: fixed;
+    position: relative;
+}
+
+.fi-body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 30%, var(--supernova-primary-bright)20 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, var(--supernova-secondary-aqua)15 0%, transparent 50%),
+        radial-gradient(circle at 60% 20%, var(--supernova-accent-teal)10 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+/* Panel styling */
+.fi-main {
+    background: rgba(26, 74, 74, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 191, 191, 0.2);
+}
+
+/* Sidebar styling */
+.fi-sidebar {
+    background: linear-gradient(180deg, 
+        var(--supernova-primary-dark) 0%, 
+        var(--supernova-primary-mid1) 100%);
+    border-right: 2px solid var(--supernova-primary-bright);
+}
+
+.fi-sidebar-nav-item.fi-active {
+    background: linear-gradient(90deg, 
+        var(--supernova-primary-bright) 0%, 
+        var(--supernova-accent-medium) 100%);
+    color: var(--supernova-text-white) !important;
+    box-shadow: 0 0 15px rgba(0, 191, 191, 0.5);
+}
+
+/* Header styling */
+.fi-header {
+    background: linear-gradient(90deg, 
+        var(--supernova-primary-dark) 0%, 
+        var(--supernova-primary-mid2) 100%);
+    border-bottom: 2px solid var(--supernova-primary-bright);
+    backdrop-filter: blur(15px);
+}
+
+/* Card styling */
+.fi-section {
+    background: rgba(42, 106, 106, 0.1);
+    border: 1px solid rgba(0, 191, 191, 0.3);
+    backdrop-filter: blur(8px);
+}
+
+/* Button primary styling */
+.fi-btn-primary {
+    background: linear-gradient(90deg, 
+        var(--supernova-primary-bright) 0%, 
+        var(--supernova-accent-medium) 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 191, 191, 0.3);
+    transition: all 0.3s ease;
+}
+
+.fi-btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(0, 191, 191, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Logo enhancement */
+.fi-logo img {
+    filter: drop-shadow(0 0 10px rgba(0, 191, 191, 0.6));
+    transition: all 0.3s ease;
+}
+
+.fi-logo img:hover {
+    filter: drop-shadow(0 0 15px rgba(0, 191, 191, 0.8));
+    transform: scale(1.05);
+}
+
+/* Table styling */
+.fi-table {
+    background: rgba(26, 74, 74, 0.05);
+    border: 1px solid rgba(0, 191, 191, 0.2);
+}
+
+.fi-table thead th {
+    background: var(--supernova-primary-mid1);
+    color: var(--supernova-text-light-cyan);
+    border-bottom: 2px solid var(--supernova-primary-bright);
+}
+
+.fi-table tbody tr:hover {
+    background: rgba(0, 191, 191, 0.1);
+}
+
+/* Form styling */
+.fi-input {
+    background: rgba(26, 74, 74, 0.1);
+    border: 1px solid rgba(0, 191, 191, 0.3);
+    color: var(--supernova-text-white);
+}
+
+.fi-input:focus {
+    border-color: var(--supernova-primary-bright);
+    box-shadow: 0 0 0 3px rgba(0, 191, 191, 0.2);
+}
+
+/* Stats cards */
+.fi-stats-card {
+    background: linear-gradient(135deg, 
+        rgba(0, 191, 191, 0.1) 0%, 
+        rgba(72, 209, 204, 0.1) 100%);
+    border: 1px solid rgba(0, 191, 191, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* Notification styling */
+.fi-notification {
+    background: rgba(26, 74, 74, 0.95);
+    border: 1px solid var(--supernova-primary-bright);
+    backdrop-filter: blur(15px);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--supernova-primary-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, 
+        var(--supernova-primary-bright) 0%, 
+        var(--supernova-accent-medium) 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, 
+        var(--supernova-accent-medium) 0%, 
+        var(--supernova-primary-bright) 100%);
+}
