@@ -22,6 +22,12 @@ class PerformanceServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Skip durante migrations e altri console commands
+        // per evitare errori di tabelle mancanti
+        if ($this->app->runningInConsole()) {
+            return;
+        }
+
         // Ottimizzazione delle query in produzione
         if ($this->app->environment('production')) {
             // Previeni lazy loading non intenzionale
@@ -30,7 +36,7 @@ class PerformanceServiceProvider extends ServiceProvider
 
         // Configurazione pool di connessioni PostgreSQL
         DB::connection()->getPdo()->setAttribute(\PDO::ATTR_PERSISTENT, true);
-        
+
         // Abilita query caching per le query comuni
         $this->enableQueryCaching();
     }
